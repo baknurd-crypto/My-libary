@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Читать книги онлайн бесплатно в Библиотеке 2009. Дневник памяти, Гарри Поттер и тысячи других книг доступны для поиска и чтения.">
+    <meta name="keywords" content="читать книги онлайн, библиотека 2009, дневник памяти читать, книги бесплатно, онлайн читалка">
+    
+    <title>Библиотека 2009 — Читать книги онлайн бесплатно</title>
+    
+    <style>
+        body { background: #121212; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .search-area { background: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        input { padding: 15px; width: 85%; border-radius: 12px; border: none; font-size: 16px; margin-top: 10px; }
+        button { padding: 15px; width: 90%; background: #007bff; color: white; border: none; border-radius: 12px; margin-top: 15px; font-weight: bold; }
+        .book { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #444; }
+        .btn-read { background: #28a745; color: white; padding: 12px; display: block; text-decoration: none; border-radius: 8px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="search-area">
+        <h1>Библиотека 2009</h1>
+        <p>Найди свою любимую книгу и начни читать прямо сейчас</p>
+        <input type="text" id="userInput" placeholder="Напиши название книги...">
+        <button onclick="smartSearch()">НАЙТИ И ЧИТАТЬ</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+        async function smartSearch() {
+            let q = document.getElementById('userInput').value;
+            const resDiv = document.getElementById('results');
+            if(!q) return;
+            resDiv.innerHTML = 'Ищу...';
+            try {
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&langRestrict=ru`);
+                const data = await response.json();
+                resDiv.innerHTML = '';
+                if(!data.items) { resDiv.innerHTML = 'Книга не найдена'; return; }
+                data.items.forEach(book => {
+                    const info = book.volumeInfo;
+                    resDiv.innerHTML += `
+                        <div class="book">
+                            <img src="${info.imageLinks ? info.imageLinks.thumbnail : ''}" width="100">
+                            <h3>${info.title}</h3>
+                            <a class="btn-read" href="${info.previewLink}" target="_blank">ЧИТАТЬ</a>
+                        </div>`;
+                });
+            } catch (e) { resDiv.innerHTML = 'Ошибка поиска'; }
+        }
+    </script>
+</body>
+</html>
